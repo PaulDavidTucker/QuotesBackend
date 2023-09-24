@@ -11,36 +11,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class UsersController {
 
     private final UsersRepository repository;
-
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     UsersController(UsersRepository repository) {
         this.repository = repository;
     }
 
-
-    // Aggregate root
-    // tag::get-aggregate-root[]
     @GetMapping("/users")
     List<Users> all() {
         log.info("Retrieved all users");
         return repository.findAll();
     }
-    // end::get-aggregate-root[]
 
     @PostMapping("/users")
     Users newUsers(@RequestBody Users newUsers) {
-        log.info("Retrieved ");
+        log.info(String.format("New user created. %d, %s, %s") + newUsers.getUser_ID(), newUsers.getUsername() + newUsers.getEmail());
         return repository.save(newUsers);
     }
 
     // Single item
-
     @GetMapping("/users/{id}")
     Users one(@PathVariable Integer id) {
+        log.info(String.format("Attempting to retrieve user %d", id));
 
         return repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -64,7 +60,7 @@ public class UsersController {
     }
 
     @DeleteMapping("/users/{id}")
-    void deleteUsers(@PathVariable Integer id) {
+    void deleteUserbyID(@PathVariable Integer id) {
         repository.deleteById(id);
     }
 }
